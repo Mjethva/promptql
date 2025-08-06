@@ -1,0 +1,27 @@
+kind: Subgraph
+version: v2
+definition:
+  name: app
+  generator:
+    rootPath: .
+    namingConvention: snake_case
+  includePaths:
+    - metadata
+  envMapping:
+    APP_AML_MONGO_AUTHORIZATION_HEADER:
+      fromEnv: APP_AML_MONGO_AUTHORIZATION_HEADER
+    APP_AML_MONGO_READ_URL:
+      fromEnv: APP_AML_MONGO_READ_URL
+    APP_AML_MONGO_WRITE_URL:
+      fromEnv: APP_AML_MONGO_WRITE_URL
+    APP_AML_POSTGRES_AUTHORIZATION_HEADER:
+      fromEnv: APP_AML_POSTGRES_AUTHORIZATION_HEADER
+    APP_AML_POSTGRES_READ_URL:
+      fromEnv: APP_AML_POSTGRES_READ_URL
+    APP_AML_POSTGRES_WRITE_URL:
+      fromEnv: APP_AML_POSTGRES_WRITE_URL
+  connectors:
+    - path: connector/aml_postgres/connector.yaml
+      connectorLinkName: aml_postgres
+    - path: connector/aml_mongo/connector.yaml
+      connectorLinkName: aml_mongo

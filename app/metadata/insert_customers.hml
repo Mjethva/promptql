@@ -1,0 +1,123 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: customers_insert_input
+  description: Input type for inserting into customers
+  fields:
+    - name: account
+      type: int_32!
+      description: New value for customers.account
+    - name: address
+      type: string
+      description: New value for customers.address
+    - name: blacklisted
+      type: boolean
+      description: New value for customers.blacklisted
+    - name: customer_id
+      type: int_32!
+      description: New value for customers.customer_id
+    - name: dob
+      type: date
+      description: New value for customers.dob
+    - name: name
+      type: string!
+      description: New value for customers.name
+    - name: nationality
+      type: string
+      description: New value for customers.nationality
+    - name: pep_status
+      type: boolean
+      description: New value for customers.pep_status
+    - name: risk_level
+      type: string
+      description: New value for customers.risk_level
+  graphql:
+    typeName: customers_insert_input
+    inputTypeName: customers_insert_input_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: aml_postgres
+      dataConnectorObjectType: customers_insert_input
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: customers_insert_input
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - account
+          - address
+          - blacklisted
+          - customer_id
+          - dob
+          - name
+          - nationality
+          - pep_status
+          - risk_level
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_customers_result
+  description: insert from customers result
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: Number of affected rows
+    - name: returning
+      type: "[customers!]!"
+      description: Objects that were affected by insert
+  graphql:
+    typeName: insert_customers_result
+    inputTypeName: insert_customers_result_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: aml_postgres
+      dataConnectorObjectType: insert_customers_result
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_customers_result
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_customers
+  outputType: insert_customers_result!
+  arguments:
+    - name: objects
+      type: "[customers_insert_input!]!"
+      description: Objects to insert
+    - name: returning
+      type: "[string!]"
+      description: Fields to return
+  source:
+    dataConnectorName: aml_postgres
+    dataConnectorCommand:
+      procedure: insert_customers
+  graphql:
+    rootFieldName: insert_customers
+    rootFieldKind: Mutation
+  description: Insert into customers
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_customers
+  permissions:
+    - role: admin
+      allowExecution: true
+

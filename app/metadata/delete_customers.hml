@@ -1,0 +1,63 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: delete_customers_result
+  description: delete from customers result
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: Number of affected rows
+    - name: returning
+      type: "[customers!]!"
+      description: Objects that were affected by delete
+  graphql:
+    typeName: delete_customers_result
+    inputTypeName: delete_customers_result_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: aml_postgres
+      dataConnectorObjectType: delete_customers_result
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: delete_customers_result
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: delete_customers
+  outputType: delete_customers_result!
+  arguments:
+    - name: returning
+      type: "[string!]"
+      description: Fields to return
+    - name: where
+      type: customers_bool_exp!
+      description: Filter for rows to delete
+  source:
+    dataConnectorName: aml_postgres
+    dataConnectorCommand:
+      procedure: delete_customers
+  graphql:
+    rootFieldName: delete_customers
+    rootFieldKind: Mutation
+  description: Delete from customers
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: delete_customers
+  permissions:
+    - role: admin
+      allowExecution: true
+

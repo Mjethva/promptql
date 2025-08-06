@@ -1,0 +1,199 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: sars
+  fields:
+    - name: customer_id
+      type: int_32
+    - name: filed_date
+      type: timestamp
+    - name: reason
+      type: string
+    - name: sar_id
+      type: int_32!
+    - name: status
+      type: string
+    - name: transaction_id
+      type: int_32
+  graphql:
+    typeName: sars
+    inputTypeName: sars_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: aml_postgres
+      dataConnectorObjectType: sars
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: sars
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - customer_id
+          - filed_date
+          - reason
+          - sar_id
+          - status
+          - transaction_id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: sars_bool_exp
+  operand:
+    object:
+      type: sars
+      comparableFields:
+        - fieldName: customer_id
+          booleanExpressionType: integer_bool_exp
+        - fieldName: filed_date
+          booleanExpressionType: timestamp_without_time_zone_bool_exp
+        - fieldName: reason
+          booleanExpressionType: text_bool_exp
+        - fieldName: sar_id
+          booleanExpressionType: integer_bool_exp
+        - fieldName: status
+          booleanExpressionType: character_varying_bool_exp
+        - fieldName: transaction_id
+          booleanExpressionType: integer_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: sars_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: sars_agg_exp
+  operand:
+    object:
+      aggregatedType: sars
+      aggregatableFields:
+        - fieldName: customer_id
+          aggregateExpression: integer_agg_exp
+        - fieldName: filed_date
+          aggregateExpression: timestamp_without_time_zone_agg_exp
+        - fieldName: reason
+          aggregateExpression: text_agg_exp
+        - fieldName: sar_id
+          aggregateExpression: integer_agg_exp
+        - fieldName: status
+          aggregateExpression: character_varying_agg_exp
+        - fieldName: transaction_id
+          aggregateExpression: integer_agg_exp
+  count:
+    enable: true
+  graphql:
+    selectTypeName: sars_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: sars_order_by_exp
+  operand:
+    object:
+      orderedType: sars
+      orderableFields:
+        - fieldName: customer_id
+          orderByExpression: int_32_order_by_exp
+        - fieldName: filed_date
+          orderByExpression: timestamp_order_by_exp
+        - fieldName: reason
+          orderByExpression: string_order_by_exp
+        - fieldName: sar_id
+          orderByExpression: int_32_order_by_exp
+        - fieldName: status
+          orderByExpression: string_order_by_exp
+        - fieldName: transaction_id
+          orderByExpression: int_32_order_by_exp
+      orderableRelationships:
+        - relationshipName: customer
+        - relationshipName: financial_transfer
+  graphql:
+    expressionTypeName: sars_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: sars
+  objectType: sars
+  source:
+    dataConnectorName: aml_postgres
+    collection: sars
+  filterExpressionType: sars_bool_exp
+  aggregateExpression: sars_agg_exp
+  orderByExpression: sars_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: sars
+      subscription:
+        rootField: sars
+    selectUniques:
+      - queryRootField: sars_by_sar_id
+        uniqueIdentifier:
+          - sar_id
+        subscription:
+          rootField: sars_by_sar_id
+    filterInputTypeName: sars_filter_input
+    aggregate:
+      queryRootField: sars_aggregate
+      subscription:
+        rootField: sars_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: sars
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customer
+  sourceType: sars
+  target:
+    model:
+      name: customers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customer_id
+      target:
+        modelField:
+          - fieldName: customer_id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: financial_transfer
+  sourceType: sars
+  target:
+    model:
+      name: financial_transfers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: transaction_id
+      target:
+        modelField:
+          - fieldName: transaction_id
+
